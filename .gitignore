@@ -1,3 +1,5 @@
 image*
 *.doc
 *.docx
+*.xls
+*.xlsx
