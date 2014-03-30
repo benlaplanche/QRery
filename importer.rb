@@ -1,14 +1,15 @@
 require 'csv'
+require 'rqrcode_png'
 
 module Qrery
 	class Importer
 
-		def initialize(inputfile = nil, outputfile = nil)
+		def initialize(inputfile = nil, size = nil)
 			inputfile ||= 'data.csv'
-			outputfile ||= 'image'
+			size ||= 270
 
 			@inputfile = inputfile
-			@outputfile = outputfile
+			@size = size.to_i
 		end
 
 		def gen
@@ -21,8 +22,9 @@ module Qrery
 				row.each { |k,v|
 					output << cleanse(v) unless v.nil?
 					output << ':'
-					puts output
+					# puts output
 				}
+				export(output)
 			end
 		end
 
@@ -32,7 +34,14 @@ module Qrery
 			return row
 		end
 
-		def export
+		def export(output)
+			qr = RQRCode::QRCode.new(output, size: 21, level: :h)
+			png = qr.to_img
+			png.resize(@size,@size).save("image#{filetime}.png")
+		end
+
+		def filetime
+			Time.now.strftime("%Y%m%d%H%M%S%L").to_i
 		end
 	end
 end
